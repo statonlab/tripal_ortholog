@@ -13,7 +13,7 @@ $schema = [];
 
 //Group base table
 if (!db_table_exists('chado_grp')) {
-$schema['chado_biomaterial'] = [
+$schema['chado_grp'] = [
 'fields' => [
 'vid' => [
 'type' => 'int',
