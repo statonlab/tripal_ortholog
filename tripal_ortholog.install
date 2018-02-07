@@ -1,0 +1,68 @@
+<?php
+
+
+/**
+* Implements hook_schema().
+*
+* This function implements the hook schema.  It defines the GROUP module chado schema (not yet implemented, possibly in 1.4)
+*
+* @ingroup tripal_ortholog
+*/
+function tripal_ortholog_schema() {
+$schema = [];
+
+//Group base table
+if (!db_table_exists('chado_grp')) {
+$schema['chado_biomaterial'] = [
+'fields' => [
+'vid' => [
+'type' => 'int',
+'unsigned' => TRUE,
+'not null' => TRUE,
+'default' => 0,
+],
+'nid' => [
+'type' => 'int',
+'unsigned' => TRUE,
+'not null' => TRUE,
+'default' => 0,
+],
+'biomaterial_id' => [
+'type' => 'int',
+'not null' => TRUE,
+'default' => 0,
+],
+],
+'indexes' => [
+'biomaterial_id' => ['biomaterial_id'],
+],
+'unique keys' => [
+'nid_vid' => ['nid', 'vid'],
+'vid' => ['vid'],
+],
+'primary key' => ['nid'],
+];
+}
+//Group property table
+  if (!db_table_exists('chado_grpprop')) {
+  }
+
+
+  if (!db_table_exists('chado_grpmember')) {
+  }
+  if (!db_table_exists('chado_grpmemberprop')) {
+  }
+  if (!db_table_exists('chado_analysisgrp')) {
+  }
+  if (!db_table_exists('chado_grpmember_cvterm')) {
+  }
+  if (!db_table_exists('chado_grp_relationship')) {
+  }
+  if (!db_table_exists('chado_grp_relationshipprop')) {
+  }
+
+
+
+
+return $schema;
+}

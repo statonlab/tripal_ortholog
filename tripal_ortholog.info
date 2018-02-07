@@ -1,0 +1,8 @@
+name = Tripal Ortholog
+description = A module to support Orthologs
+core = 7.x
+version = 7.x-3.0
+project = tripal_ortholog
+package = Tripal Extensions
+dependencies[] = tripal
+dependencies[] = tripal_chado
