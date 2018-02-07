@@ -2,54 +2,115 @@
 
 
 /**
-* Implements hook_schema().
-*
-* This function implements the hook schema.  It defines the GROUP module chado schema (not yet implemented, possibly in 1.4)
-*
-* @ingroup tripal_ortholog
-*/
-function tripal_ortholog_schema() {
-$schema = [];
-
-//Group base table
-if (!db_table_exists('chado_grp')) {
-$schema['chado_grp'] = [
-'fields' => [
-'vid' => [
-'type' => 'int',
-'unsigned' => TRUE,
-'not null' => TRUE,
-'default' => 0,
-],
-'nid' => [
-'type' => 'int',
-'unsigned' => TRUE,
-'not null' => TRUE,
-'default' => 0,
-],
-'biomaterial_id' => [
-'type' => 'int',
-'not null' => TRUE,
-'default' => 0,
-],
-],
-'indexes' => [
-'biomaterial_id' => ['biomaterial_id'],
-],
-'unique keys' => [
-'nid_vid' => ['nid', 'vid'],
-'vid' => ['vid'],
-],
-'primary key' => ['nid'],
-];
+ * Implements hook_schema().
+ *
+ * This function implements the hook schema.  It defines the GROUP module chado
+ * schema (not yet implemented, possibly in 1.4)
+ *
+ * @ingroup tripal_ortholog
+ */
+function tripal_ortholog_install() {
+tripal_ortholog_install_group_schema();
+tripal_ortholog_additional_chado_tables();
 }
-//Group property table
+
+
+/**
+ * Installs Group module
+ */
+function tripal_ortholog_install_group_schema() {
+
+  // Get the path to the schema diff and upgarde SQL files.
+  $schema_file = drupal_get_path('module', 'tripal_ortholog') . '/schema/ChadoGroupModule.sql';
+  $success = tripal_chado_install_sql($schema_file);
+  if ($success) {
+    print "Successfully installed the Chado Group module!\n";
+  }
+  else {
+    throw new Exception("Upgrade problems!  Please check output above for errors.");
+  }
+}
+
+/**
+ * The sql does not incldue feature: we do that ourselves.
+ */
+function tripal_ortholog_additional_chado_tables(){
+  //feature grpmember table
+  $schema = [
+    'table' => 'feature_grpmember',
+    'fields' => [
+      'feature_grpmember_id' => [
+        'type' => 'serial', 'not null' => TRUE
+      ],
+      'feature_id' => ['type' => 'int', 'not null' => TRUE],
+      'grpmember_id' => ['type' => 'int', 'not null' => TRUE],
+    ],
+    'indexes' => [],
+    'foreign keys' => [
+      'feature_id', 'grpmember_id'
+    ],
+    'unique keys' => [
+      'feature_grpmember_unique_uq1' => ['feature_id', 'grpmember_id']
+    ],
+    'primary key' => ['feature_grpmember_id']
+  ];
+  chado_create_custom_table('feature_grpmember', $schema);
+}
+
+/**
+ * This function is not necessary because we have the sql schema, just run that instead.
+ *
+ */
+function tripal_ortholog_setup_chado() {
+
+  //Group base table
+    $schema = [
+      'table' => 'grp',
+      'fields' => [
+        'grp_id' => [
+          'type' => 'serial', 'not null' => TRUE
+        ],
+        'name' => ['type' => 'varchar', 'length' => '255'],
+        'uniquename' => ['type' => 'text', 'not null' => TRUE],
+        'type_id' => ['type' => 'int', 'not null' => TRUE]
+      ],
+      'indexes' => [],
+      'unique keys' => [
+        'grp_unique_uq1' => ['uniquename', 'type_id']
+      ],
+      'primary key' => ['grp_id']
+    ];
+
+    chado_create_custom_table('grp', $schema);
+
+  //Group property table
   if (!db_table_exists('chado_grpprop')) {
   }
 
 
-  if (!db_table_exists('chado_grpmember')) {
-  }
+
+  // grpmember table
+  $schema = [
+    'table' => 'grpmember',
+    'fields' => [
+      'grpmember_id' => [
+        'type' => 'serial', 'not null' => TRUE
+      ],
+      'grp_id' => ['type' => 'int', 'not null' => TRUE],
+      'type_id' => ['type' => 'int', 'not null' => TRUE],
+    ],
+    'foreign keys' => [
+      'feature_id', 'grpmember_id'
+    ],
+    'unique keys' => [
+      'feature_grpmember_unique_uq1' => ['feature_id', 'grpmember_id']
+    ],
+    'primary key' => ['grpmember_id']
+  ];
+  chado_create_custom_table('feature_grpmember', $schema);
+
+
+
   if (!db_table_exists('chado_grpmemberprop')) {
   }
   if (!db_table_exists('chado_analysisgrp')) {
@@ -61,8 +122,4 @@ $schema['chado_grp'] = [
   if (!db_table_exists('chado_grp_relationshipprop')) {
   }
 
-
-
-
-return $schema;
 }
