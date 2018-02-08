@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Implements hook_schema().
  *
@@ -10,8 +9,9 @@
  * @ingroup tripal_ortholog
  */
 function tripal_ortholog_install() {
-tripal_ortholog_install_group_schema();
-tripal_ortholog_additional_chado_tables();
+  module_load_install('tripal_chado');//load in the tripal chado install for access to tripal_chado_install_sql()
+
+  tripal_ortholog_install_group_schema();
 }
 
 
@@ -31,8 +31,9 @@ function tripal_ortholog_install_group_schema() {
   }
 }
 
+
 /**
- * The sql does not incldue feature: we do that ourselves.
+ *  feature_grmember is actually included in the sql
  */
 function tripal_ortholog_additional_chado_tables(){
   //feature grpmember table

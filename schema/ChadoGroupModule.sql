@@ -11,6 +11,9 @@ CREATE TABLE grp (
     is_analysis boolean NOT NULL DEFAULT false,
     UNIQUE(uniquename, type_id)
 );
+
+COMMENT ON TABLE grp IS 'The base group table.';
+
 --Group annotation
 CREATE TABLE grpprop (
     grpprop_id serial PRIMARY KEY,
@@ -22,6 +25,7 @@ CREATE TABLE grpprop (
       ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
     UNIQUE(rank, type_id, grp_id)
 );
+
 --Group annotation provenance
 CREATE TABLE grpprop_pub (
     grpprop_pub_id serial PRIMARY KEY,
@@ -129,6 +133,9 @@ CREATE TABLE grpmember (
       ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
     UNIQUE(rank, type_id, grp_id)
 );
+
+COMMENT ON TABLE grp IS 'Group membership.';
+
 --Group member provenance
 CREATE TABLE grpmember_pub (
     grpmember_pub_id serial PRIMARY KEY,
