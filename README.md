@@ -1,5 +1,7 @@
 The Tripal Ortholog module is being developed to allow HWG to track syntenic groups of features and as a starting point for enabling comparative genomics.
 
+The data we're looking to support importing is [OrthoFinder](https://github.com/davidemms/OrthoFinder).  An example zip file of output is included: the list of ortholog groups and feature names is `Orthogroups.txt`.  It's recommended that subsequent group calls are used with the advanced ["add extra species"](https://github.com/davidemms/OrthoFinder#adding-extra-species) option. Analyses (subtype cluster analysis) should then refer to the original analysis.
+
 The module is briefly outlined [here](http://gmod.org/wiki/Chado_Group_Module
 ).  As far as I can tell, the alternatives used in discussion (a feature that is a group, or using featureprops) are inferior to a dedicated module.
 
