@@ -35,59 +35,62 @@ function tripal_ortholog_install_group_schema() {
 /**
  *  feature_grmember is actually included in the sql
  */
-function tripal_ortholog_additional_chado_tables(){
+function tripal_ortholog_additional_chado_tables() {
   //feature grpmember table
   $schema = [
     'table' => 'feature_grpmember',
     'fields' => [
       'feature_grpmember_id' => [
-        'type' => 'serial', 'not null' => TRUE
+        'type' => 'serial',
+        'not null' => TRUE,
       ],
       'feature_id' => ['type' => 'int', 'not null' => TRUE],
       'grpmember_id' => ['type' => 'int', 'not null' => TRUE],
     ],
     'indexes' => [],
     'foreign keys' => [
-      'feature_id', 'grpmember_id'
+      'feature_id',
+      'grpmember_id',
     ],
     'unique keys' => [
-      'feature_grpmember_unique_uq1' => ['feature_id', 'grpmember_id']
+      'feature_grpmember_unique_uq1' => ['feature_id', 'grpmember_id'],
     ],
-    'primary key' => ['feature_grpmember_id']
+    'primary key' => ['feature_grpmember_id'],
   ];
   chado_create_custom_table('feature_grpmember', $schema);
 }
 
 /**
- * This function is not necessary because we have the sql schema, just run that instead.
+ * This function is not necessary because we have the sql schema, just run that
+ * instead.
  *
  */
 function tripal_ortholog_setup_chado() {
 
   //Group base table
-    $schema = [
-      'table' => 'grp',
-      'fields' => [
-        'grp_id' => [
-          'type' => 'serial', 'not null' => TRUE
-        ],
-        'name' => ['type' => 'varchar', 'length' => '255'],
-        'uniquename' => ['type' => 'text', 'not null' => TRUE],
-        'type_id' => ['type' => 'int', 'not null' => TRUE]
+  $schema = [
+    'table' => 'grp',
+    'fields' => [
+      'grp_id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
       ],
-      'indexes' => [],
-      'unique keys' => [
-        'grp_unique_uq1' => ['uniquename', 'type_id']
-      ],
-      'primary key' => ['grp_id']
-    ];
+      'name' => ['type' => 'varchar', 'length' => '255'],
+      'uniquename' => ['type' => 'text', 'not null' => TRUE],
+      'type_id' => ['type' => 'int', 'not null' => TRUE],
+    ],
+    'indexes' => [],
+    'unique keys' => [
+      'grp_unique_uq1' => ['uniquename', 'type_id'],
+    ],
+    'primary key' => ['grp_id'],
+  ];
 
-    chado_create_custom_table('grp', $schema);
+  chado_create_custom_table('grp', $schema);
 
   //Group property table
   if (!db_table_exists('chado_grpprop')) {
   }
-
 
 
   // grpmember table
@@ -95,21 +98,22 @@ function tripal_ortholog_setup_chado() {
     'table' => 'grpmember',
     'fields' => [
       'grpmember_id' => [
-        'type' => 'serial', 'not null' => TRUE
+        'type' => 'serial',
+        'not null' => TRUE,
       ],
       'grp_id' => ['type' => 'int', 'not null' => TRUE],
       'type_id' => ['type' => 'int', 'not null' => TRUE],
     ],
     'foreign keys' => [
-      'feature_id', 'grpmember_id'
+      'feature_id',
+      'grpmember_id',
     ],
     'unique keys' => [
-      'feature_grpmember_unique_uq1' => ['feature_id', 'grpmember_id']
+      'feature_grpmember_unique_uq1' => ['feature_id', 'grpmember_id'],
     ],
-    'primary key' => ['grpmember_id']
+    'primary key' => ['grpmember_id'],
   ];
   chado_create_custom_table('feature_grpmember', $schema);
-
 
 
   if (!db_table_exists('chado_grpmemberprop')) {
@@ -123,4 +127,76 @@ function tripal_ortholog_setup_chado() {
   if (!db_table_exists('chado_grp_relationshipprop')) {
   }
 
+}
+
+
+/**
+ * the ortholog module defines the ortholog group bundle using the sequence collection term.
+ * Note that a collection MAY OR MAY NOT be orthologs.
+ * Ortholog implies 1:1 relationship across species.
+ * http://www.sequenceontology.org/browser/current_svn/term/SO:0001260
+ *
+ */
+function tripal_ortholog_define_bundles() {
+  //analysis subtype bundle
+  //https://www.ebi.ac.uk/ols/ontologies/swo/terms?iri=http%3A%2F%2Fedamontology.org%2Foperation_0291
+  $term = tripal_insert_cvterm(array(
+    'id' => 'operation:0291',
+    'name' => 'Sequence clustering',
+    'cv_name' => 'EDAM',
+    'definition' => 'Build clusters of similar sequences, typically using scores from pair-wise alignment or other comparison of the sequences.',
+  ));
+
+  $args = array(
+    'vocabulary' => 'operation',
+    'accession' => '0291',
+    'term_name' => 'Sequence clustering',
+    'storage_args' => array(
+      'data_table' => 'analysis',
+      'type_column' => 'type_id',
+    )
+  );
+
+  $term = tripal_load_term_entity(array('vocabulary' => 'operation', 'accession' => '0291'));
+  if ($term) {
+    $bundle = tripal_load_bundle_entity(array('term_id' => $term->id));
+  }
+  if (!$term or !$bundle) {
+    if (!tripal_create_bundle($args, $error)) {
+      $msg = (isset($error['!message'])) ? $error['!message'] : 'Error Encountered creating "Gene" Tripal Content Type.';
+      throw new Exception($msg);
+    }
+  }
+
+
+
+//the groups bundle
+  $term = tripal_insert_cvterm(array(
+    'id' => 'SO:0001260',
+    'name' => 'sequence_collection',
+    'cv_name' => 'sequence',
+    'definition' => 'A collection of discontinuous sequences.',
+  ));
+
+  $error = '';
+  $args = array(
+    'vocabulary' => 'SO',
+    'accession' => '0001260',
+    'term_name' => 'sequence_collection',
+    'storage_args' => array(
+      'data_table' => 'grp',
+      'type_column' => 'type_id',
+    )
+  );
+
+  $term = tripal_load_term_entity(array('vocabulary' => 'SO', 'accession' => '0001260'));
+  if ($term) {
+    $bundle = tripal_load_bundle_entity(array('term_id' => $term->id));
+  }
+  if (!$term or !$bundle) {
+    if (!tripal_create_bundle($args, $error)) {
+      $msg = (isset($error['!message'])) ? $error['!message'] : 'Error Encountered creating "Gene" Tripal Content Type.';
+      throw new Exception($msg);
+    }
+  }
 }

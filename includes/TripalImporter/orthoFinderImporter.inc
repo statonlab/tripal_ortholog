@@ -1,5 +1,5 @@
 <?php
-class orthoMCLimporter extends TripalImporter {
+class orthoFinderImporter extends TripalImporter {
 
   /**
    * The name of this loader.  This name will be presented to the site
@@ -80,3 +80,8 @@ class orthoMCLimporter extends TripalImporter {
 
   }
 }
+
+//Some thoughts:
+//We need to know the type of group we're creating.
+//This could be a regular collection, or it could be orthologs.
+//I dont know that we'll have that information explicitly or if we'll have to infer it.
