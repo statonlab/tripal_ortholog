@@ -11,4 +11,4 @@ The module is briefly outlined [here](http://gmod.org/wiki/Chado_Group_Module
 Initial implementation will focus on defining feature orthogroups, but a good implementation should be generic for the module. The thing is, I don't have a lot of info to go on for this module.  Why would I create groups of organisms in this context?  As a genera?    So we'll focus on feature groups here.
 
 
-This module is under active development.
+This module is incomplete, and development is on hiatus.  Please reach out via issues if you'd like to work on this with me.
