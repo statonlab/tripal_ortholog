@@ -1,4 +1,6 @@
 
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
 # Module Not Ready for Use
 
 This module is not ready for use.
